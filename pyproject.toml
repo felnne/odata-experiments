@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "odata-exp"
+version = "0.1.0"
+description = "OData experiments"
+authors = ["Felix Fennell <felnne@bas.ac.uk>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.12"
+fastapi = "^0.94.0"
+geojson = "^3.0.1"
+jinja2 = "^3.1.2"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.1.0"
+uvicorn = "^0.21.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

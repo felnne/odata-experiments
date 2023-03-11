@@ -1,0 +1,82 @@
+{
+  "type": "FeatureCollection",
+  "name": "depots",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "identifier":"Alpha",
+        "established_at": "2018-11-04"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -72.079414655276381,
+          -69.468610062165837
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "identifier": "Bravo",
+        "established_at": "2022-01-30"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -72.336723389355114,
+          -69.233975163083969
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "identifier": "Charlie",
+        "established_at": "2016-10-16"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -72.420489970715977,
+          -68.956924039317769
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "identifier": "Delta",
+        "established_at": "2020-10-05"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -71.602003684115886,
+          -68.709662413854772
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "identifier": "Echo",
+        "established_at": "2022-02-24"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -71.311788733441276,
+          -68.308723011617701
+        ]
+      }
+    }
+  ]
+}
