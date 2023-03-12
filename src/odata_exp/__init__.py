@@ -2,6 +2,7 @@ import secrets
 from datetime import date
 from typing import Dict, List, Optional
 
+import ldap
 from fastapi import FastAPI, Response, Depends, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
@@ -19,7 +20,7 @@ templates = JinjaEnvironment(loader=PackageLoader("odata_exp"))
 config = {
     "namespace": "ODataExperiments",
     "endpoint": "http://localhost:8004",
-    "auth": {"username": "conwat", "password": "password"},
+    "auth": {"ldap_url": "ldap://localhost:3893", "ldap_base_dn": "dc=felnne,dc=net", "ldap_ou": "staff"},
     "db_dsn": "host=localhost dbname=odata_exp user=odata_exp",
 }
 
@@ -50,15 +51,15 @@ def determine_column_type(column_type: str) -> str:
 
 
 def check_auth(credentials: HTTPBasicCredentials) -> None:
-    auth_username = config["auth"]["username"].encode()
-    auth_password = config["auth"]["password"].encode()
+    connect = ldap.initialize(config["auth"]["ldap_url"])
+    connect.set_option(ldap.OPT_REFERRALS, 0)
+    user_dn = f"cn={credentials.username},ou={config['auth']['ldap_ou']},{config['auth']['ldap_base_dn']}"
 
-    login_username = credentials.username.encode()
-    login_password = credentials.password.encode()
-
-    if not secrets.compare_digest(login_username, auth_username) or not secrets.compare_digest(
-        login_password, auth_password
-    ):
+    try:
+        connect.simple_bind_s(user_dn, credentials.password)
+        connect.unbind_s()
+    except ldap.LDAPError:
+        connect.unbind_s()
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",

@@ -16,7 +16,7 @@ Field Operations use Excel to perform ad-hoc analysis of their information.
 ## Limitations
 
 1. ~~static data~~
-2. static authentication (resolvable but untested)
+2. ~~static authentication~~
 3. ~~data schema changes require app restart~~
 4. we only support point geometry columns (minor, won't be addressed)
 5. hyperlink fields are not supported in OData:
@@ -26,10 +26,17 @@ Field Operations use Excel to perform ad-hoc analysis of their information.
     * [workaround using Excel Script](https://nercacuk-my.sharepoint.com/:u:/r/personal/felnne_bas_ac_uk/Documents/Apps/Microsoft%20Excel/Scripts/Add%20Hyperlinks%20from%20Sheet.osts?csf=1&web=1&e=cCoyvA)
 6. Excel has extremely aggressive caching:
     * [possible solution on Windows?](https://community.powerbi.com/t5/Power-Query/Excel-Power-Query-Cache-Folder/m-p/2638525/highlight/true#M80795)
+7. LDAP group information not checked (minor as read only)
 
 ## Usage
 
-Start server:
+Start LDAP server:
+
+```
+./ldap/glauth -c ./ldap/config.cfg
+```
+
+Start app server:
 
 ```shell
 $ poetry run uvicorn odata_exp:app --port 8004
@@ -236,6 +243,14 @@ $ curl http://localhost:8004/Depots
 }
 ```
 
+### Authentication
+
+To mimic real world usage, where LDAP will be used for centralised authentication, a local LDAP server is used. This is
+configured with statically defined users, however from the perspective of the application, it is performing a dynamic
+check on credentials for restricted routes.
+
+Users are other LDAP server configuration is set in `./ldap/config.cfg`.
+
 ## Development
 
 ### Development requirements
@@ -244,6 +259,7 @@ $ curl http://localhost:8004/Depots
 * Python 3.11 (pyenv recommended)
 * Poetry
 * Git
+* [glauth](https://github.com/glauth/glauth)
 
 ### Development setup
 
@@ -258,6 +274,10 @@ $ pyenv local 3.11.x
 
 $ poetry install
 ```
+
+#### Setup LDAP
+
+Download the latest [glauth release](https://github.com/glauth/glauth/releases) binary to `./ldap`. 
 
 #### Setup PostgreSQL
 
@@ -294,6 +314,39 @@ INSERT INTO depot (identifier, established_at, geom) VALUES ('Bravo', '2023-03-1
 INSERT INTO depot (identifier, established_at, geom) VALUES ('Charlie', '2016-10-16', '0101000020E61000005A21C44EE91A52C01168533E3E3D51C0');
 INSERT INTO depot (identifier, established_at, geom) VALUES ('Delta', '2020-10-05', '0101000020E61000005AD6753A87E651C03AADE61B6B2D51C0');
 INSERT INTO depot (identifier, established_at, geom) VALUES ('Echo', '2022-02-24', '0101000020E61000000F59BB58F4D351C0EC9A291EC21351C0');
+```
+
+### LDAP
+
+To verify LDAP is working correctly use `ldapsearch`, which should return output similar to this:
+
+```shell
+$ ldapsearch -LLL -H ldap://localhost:3893 -D cn=conwat,ou=staff,dc=felnne,dc=net -w password -x -bdc=felnne,dc=net cn=conwat
+dn: cn=conwat,ou=staff,ou=users,dc=felnne,dc=net
+cn: conwat
+uid: conwat
+givenName: Connie
+sn: Watson
+ou: staff
+uidNumber: 5001
+accountStatus: active
+mail: conwat@bas.ac.uk
+userPrincipalName: conwat@bas.ac.uk
+objectClass: posixAccount
+objectClass: shadowAccount
+loginShell: /bin/bash
+homeDirectory: /home/conwat
+description: conwat
+gecos: conwat
+gidNumber: 5501
+memberOf: ou=staff,ou=groups,dc=felnne,dc=net
+shadowExpire: -1
+shadowFlag: 134538308
+shadowInactive: -1
+shadowLastChange: 11000
+shadowMax: 99999
+shadowMin: -1
+shadowWarning: 7
 ```
 
 ## License
