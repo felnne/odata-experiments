@@ -15,13 +15,10 @@ Field Operations use Excel to perform ad-hoc analysis of their information.
 
 ## Limitations
 
-1. static data (resolvable)
+1. ~~static data~~
 2. static authentication (resolvable but untested)
-3. data schema changes require app restart (possibly resolvable)
-    * the metadata document needs to be updated if the data schema changes
-    * that configuration needs to match the shape of the data being read
-    * currently that config is set statically in the app, rather than being dynamically parsed
-    * can we examine all the tables in a DB and dynamically generate the config to use?
+3. ~~data schema changes require app restart~~
+4. only point geometry columns supported
 
 ## Usage
 
@@ -225,6 +222,62 @@ $ curl http://localhost:8004/Depots
     }
   ]
 }
+```
+
+## Development
+
+### Development requirements
+
+* PostgreSQL with PostGIS extension
+* Python 3.11 (pyenv recommended)
+* Poetry
+* Git
+
+### Development setup
+
+Setup development environment:
+
+```shell
+git clone ...
+cd odata-exp
+
+# if using pyenv set to Python 3.11
+pyenv local 3.11.x
+
+poetry install
+```
+
+Create database:
+
+```sql
+-- Create DB
+-- Create role and grants
+```
+
+Populate database:
+
+```sql
+create extension postgis;
+
+create table depot
+(
+    id  
+        integer generated always as identity
+        constraint depots_pk primary key,
+    identifier 
+        text not null
+        constraint depots_uq_identifier unique,
+    established_at 
+        date,
+    geom
+        geometry(Point, 4326) not null
+);
+
+INSERT INTO depot (identifier, established_at, geom) VALUES ('Alpha', '2018-11-04', '0101000020E61000000DCF3421150552C00BE50EB5FD5D51C0');
+INSERT INTO depot (identifier, established_at, geom) VALUES ('Bravo', '2023-03-11', '0101000020E6100000064542E08C1552C06761F672F94E51C0');
+INSERT INTO depot (identifier, established_at, geom) VALUES ('Charlie', '2016-10-16', '0101000020E61000005A21C44EE91A52C01168533E3E3D51C0');
+INSERT INTO depot (identifier, established_at, geom) VALUES ('Delta', '2020-10-05', '0101000020E61000005AD6753A87E651C03AADE61B6B2D51C0');
+INSERT INTO depot (identifier, established_at, geom) VALUES ('Echo', '2022-02-24', '0101000020E61000000F59BB58F4D351C0EC9A291EC21351C0');
 ```
 
 ## License

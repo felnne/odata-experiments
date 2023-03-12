@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <edmx:Edmx xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" Version="4.0">
     <edmx:DataServices>
-        <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="{{context.namespace}}">
-            {%- for entity in context.entities -%}
+        <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="{{namespace}}">
+            {%- for entity in entities -%}
             <EntityType Name="{{entity.name}}">
             {%- for property in entity.properties -%}
                 {%- if property.is_key -%}
@@ -10,13 +10,13 @@
                     <PropertyRef Name="{{property.name}}"/>
                 </Key>
                 {%- endif -%}
-                <Property Name="{{property.name}}" Type="{{property.type}}" Nullable="{{property.nullable}}"/>
+                <Property Name="{{property.name}}" Type="{{property.type}}"/>
                 {%- endfor -%}
             </EntityType>
             {%- endfor -%}
             <EntityContainer Name="Container">
-            {%- for entity in context.entities -%}
-                <EntitySet Name="{{entity.collection}}" EntityType="{{context.namespace}}.{{entity.name}}"/>
+            {%- for entity in entities -%}
+                <EntitySet Name="{{entity.collection}}" EntityType="{{namespace}}.{{entity.name}}"/>
             {%- endfor -%}
             </EntityContainer>
         </Schema>
