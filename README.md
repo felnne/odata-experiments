@@ -18,13 +18,13 @@ Field Operations use Excel to perform ad-hoc analysis of their information.
 1. ~~static data~~
 2. static authentication (resolvable but untested)
 3. ~~data schema changes require app restart~~
-4. we only support point geometry columns
-5. hyperlink fields are not supported in OData
-    * a formula can be given but needs to be manually executed once loaded (can that be automated?)
-    * they aren't supported in SharePoint either
+4. we only support point geometry columns (minor, won't be addressed)
+5. hyperlink fields are not supported in OData:
+    * a `HYPERLINK()` formula can be given but isn't interpreted when loaded
+    * link columns in a SharePoint list don't work either
     * [possible solution on Windows?](https://community.powerbi.com/t5/Desktop/Hyperlink-in-Power-Query-Editor/m-p/140333/highlight/true#M60427)
     * [workaround using Excel Script](https://nercacuk-my.sharepoint.com/:u:/r/personal/felnne_bas_ac_uk/Documents/Apps/Microsoft%20Excel/Scripts/Add%20Hyperlinks%20from%20Sheet.osts?csf=1&web=1&e=cCoyvA)
-6. Excel has extremely aggressive caching
+6. Excel has extremely aggressive caching:
     * [possible solution on Windows?](https://community.powerbi.com/t5/Power-Query/Excel-Power-Query-Cache-Folder/m-p/2638525/highlight/true#M80795)
 
 ## Usage
@@ -124,23 +124,28 @@ Entities in OData represent datasets or tables (e.g. Depots, People or Orders). 
 a thing, collections are used for multiple instances. Entities, and collections they appear within, are defined in the
 OData metadata document.
 
-In this experiment, a single entity, *Depot*, represents a simple form of a depot and is used as an example.
+To reflect real world usage, where Field Operations will create new datasets at will, this experiment introspects
+available tables in a Postgres database on each request (to avoid app restarts on schema changes).
+
+A single *Depot* entity, representing a simple form of a depot is provided by default. Other entities can be added as 
+desired.
 
 ### Primitive types
 
 OData entities include a number of properties, which represent attributes or columns within datasets or tables (e.g. 
-ID, Name, Latitude/Longitude, Last Accessed At). These properties, including a data type, are defined in the OData
-metadata document.
-
-Valid data types are 
+ID, Name, Latitude/Longitude, Last Accessed At). These properties, including a data type, are outputted in the OData
+metadata document. Valid data types are 
 [listed](https://docs.oasis-open.org/odata/odata-csdl-json/v4.01/odata-csdl-json-v4.01.html#sec_PrimitiveTypes) in the 
-OData standard and utilise the type system present in XML, including simple and complex types. 
+OData standard and utilise the type system present in XML, including simple and complex types.
 
 For our needs, only simple or primitive types are needed (e.g. string, integer, datetime, etc.) and are used by Excel
 to set the correct column type.
 
 Notably, these OData types include geospatial types (geographic and geometry), however I don't think these are needed 
 as they can't be used in Excel in a useful way.
+
+To reflect real world usage, where Field Operations will create or amend attributes within datasets at will, this 
+experiment introspects columns within Postgres tables on each request (to avoid app restarts on schema changes).
 
 ### Endpoints
 
@@ -242,23 +247,27 @@ $ curl http://localhost:8004/Depots
 
 ### Development setup
 
-Setup development environment:
+#### Setup python environment
 
 ```shell
-git clone ...
-cd odata-exp
+$ git clone ...
+$ cd odata-exp
 
 # if using pyenv set to Python 3.11
-pyenv local 3.11.x
+$ pyenv local 3.11.x
 
-poetry install
+$ poetry install
 ```
+
+#### Setup PostgreSQL
 
 Create database:
 
-```sql
--- Create DB
--- Create role and grants
+```shell
+$ psql -c 'create database odata_exp;'
+$ psql -c 'create role odata_exp;'
+$ psql -c 'grant all privileges on odata_exp;'
+$ psql -d odata_exp -c 'grant all privileges on all tables in schema public to odata_exp'
 ```
 
 Populate database:
