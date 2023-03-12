@@ -18,7 +18,14 @@ Field Operations use Excel to perform ad-hoc analysis of their information.
 1. ~~static data~~
 2. static authentication (resolvable but untested)
 3. ~~data schema changes require app restart~~
-4. only point geometry columns supported
+4. we only support point geometry columns
+5. hyperlink fields are not supported in OData
+    * a formula can be given but needs to be manually executed once loaded (can that be automated?)
+    * they aren't supported in SharePoint either
+    * [possible solution on Windows?](https://community.powerbi.com/t5/Desktop/Hyperlink-in-Power-Query-Editor/m-p/140333/highlight/true#M60427)
+    * [workaround using Excel Script](https://nercacuk-my.sharepoint.com/:u:/r/personal/felnne_bas_ac_uk/Documents/Apps/Microsoft%20Excel/Scripts/Add%20Hyperlinks%20from%20Sheet.osts?csf=1&web=1&e=cCoyvA)
+6. Excel has extremely aggressive caching
+    * [possible solution on Windows?](https://community.powerbi.com/t5/Power-Query/Excel-Power-Query-Cache-Folder/m-p/2638525/highlight/true#M80795)
 
 ## Usage
 

@@ -74,13 +74,13 @@ def list_table_names() -> List[str]:
     cursor.execute(
         """
         SELECT table_name
-        FROM information_schema.columns
+        FROM information_schema.tables
         WHERE table_schema = 'public' AND
               table_name NOT IN ('spatial_ref_sys', 'geography_columns', 'geometry_columns');
         """
     )
     for table in cursor.fetchall():
-        table_names = table[0]
+        table_names.append(table[0])
     connection.close()
 
     return table_names
@@ -266,7 +266,7 @@ def depots(entity_collection: str, credentials: HTTPBasicCredentials = Depends(s
                 column = column.isoformat()
 
             if column_name == key_column_name:
-                entity["@odata.id"] = f"{config['endpoint']}/Depots('{column}')"
+                entity["@odata.id"] = f"{config['endpoint']}/{entity_collection}('{column}')"
 
             if column_name == "Geom" and geometry_properties:
                 geom: Point = wkb.loads(column)
