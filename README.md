@@ -322,6 +322,7 @@ To verify LDAP is working correctly use `ldapsearch`, which should return output
 
 ```shell
 $ ldapsearch -LLL -H ldap://localhost:3893 -D cn=conwat,ou=staff,dc=felnne,dc=net -w password -x -bdc=felnne,dc=net cn=conwat
+
 dn: cn=conwat,ou=staff,ou=users,dc=felnne,dc=net
 cn: conwat
 uid: conwat
